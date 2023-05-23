@@ -1,20 +1,12 @@
 package it.prova.pokeronline.model;
 
-import java.util.Date;
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
 
 @Entity
 @Table(name = "utente")
@@ -24,29 +16,80 @@ public class Utente {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Long id;
+
 	@Column(name = "nome")
 	private String nome;
+
 	@Column(name = "cognome")
 	private String cognome;
-	@Column(name = "username")
+
+	@Column(name = "username", unique = true)
 	private String username;
+
 	@Column(name = "password")
 	private String password;
-	@Column(name = "dateCreated")
-	private Date dateCreated;
 
 	@Enumerated(EnumType.STRING)
-	private StatoUtente stato;
+	private StatoUtente stato = StatoUtente.CREATO;
+
+	@Column(name = "dataCreazione")
+	private LocalDate dataCreazione;
+
+	@Column(name = "creditoResiduo")
+	private Double creditoResiduo;
+
+	@Column(name = "esperienzaAccumulata")
+	private Double esperienzaAccumulata;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "tavolo_id")
+	private Tavolo tavolo;
 
 	@ManyToMany
 	@JoinTable(name = "utente_ruolo", joinColumns = @JoinColumn(name = "utente_id", referencedColumnName = "ID"), inverseJoinColumns = @JoinColumn(name = "ruolo_id", referencedColumnName = "ID"))
-	private Set<Ruolo> ruoli = new HashSet<>(0);
-	//costruttori
+	private Set<Ruolo> ruoli = new HashSet<>();
 
 	public Utente() {
-
 	}
-	//metodi get e set
+
+	public Utente(Long id, String nome, String cognome, String username, String password, StatoUtente stato,
+			LocalDate dataCreazione, Double creditoResiduo, Double esperienzaAccumulata, Tavolo tavolo,
+			Set<Ruolo> ruoli) {
+		this.id = id;
+		this.nome = nome;
+		this.cognome = cognome;
+		this.username = username;
+		this.password = password;
+		this.stato = stato;
+		this.dataCreazione = dataCreazione;
+		this.creditoResiduo = creditoResiduo;
+		this.esperienzaAccumulata = esperienzaAccumulata;
+		this.tavolo = tavolo;
+		this.ruoli = ruoli;
+	}
+
+	public Utente(String username, String password, String nome, String cognome, LocalDate dataCreazione,
+			Double creditoResiduo, Double esperienzaAccumulata) {
+		this.nome = nome;
+		this.cognome = cognome;
+		this.username = username;
+		this.password = password;
+		this.dataCreazione = dataCreazione;
+		this.creditoResiduo = creditoResiduo;
+		this.esperienzaAccumulata = esperienzaAccumulata;
+	}
+
+	public Utente(Long id, String username, String password, String nome, String cognome, Double esperienzaAccumulata,
+			Double creditoResiduo, LocalDate dataCreazione, StatoUtente stato) {
+		this.nome = nome;
+		this.cognome = cognome;
+		this.username = username;
+		this.password = password;
+		this.dataCreazione = dataCreazione;
+		this.creditoResiduo = creditoResiduo;
+		this.esperienzaAccumulata = esperienzaAccumulata;
+		this.stato = stato;
+	}
 
 	public Long getId() {
 		return id;
@@ -88,20 +131,44 @@ public class Utente {
 		this.password = password;
 	}
 
-	public Date getDateCreated() {
-		return dateCreated;
-	}
-
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-
 	public StatoUtente getStato() {
 		return stato;
 	}
 
 	public void setStato(StatoUtente stato) {
 		this.stato = stato;
+	}
+
+	public LocalDate getDataCreazione() {
+		return dataCreazione;
+	}
+
+	public void setDataCreazione(LocalDate dateCreated) {
+		this.dataCreazione = dateCreated;
+	}
+
+	public Double getCreditoResiduo() {
+		return creditoResiduo;
+	}
+
+	public void setCreditoResiduo(Double creditoResiduo) {
+		this.creditoResiduo = creditoResiduo;
+	}
+
+	public Double getEsperienzaAccumulata() {
+		return esperienzaAccumulata;
+	}
+
+	public void setEsperienzaAccumulata(Double esperienzaAccumulata) {
+		this.esperienzaAccumulata = esperienzaAccumulata;
+	}
+
+	public Tavolo getTavolo() {
+		return tavolo;
+	}
+
+	public void setTavolo(Tavolo tavolo) {
+		this.tavolo = tavolo;
 	}
 
 	public Set<Ruolo> getRuoli() {
@@ -111,7 +178,21 @@ public class Utente {
 	public void setRuoli(Set<Ruolo> ruoli) {
 		this.ruoli = ruoli;
 	}
-	
-	
+
+	public boolean isAdmin() {
+		for (Ruolo ruoloItem : ruoli) {
+			if (ruoloItem.getCodice().equals(Ruolo.ROLE_ADMIN))
+				return true;
+		}
+		return false;
+	}
+
+	public boolean isSpecialPlayer() {
+		for (Ruolo ruoloItem : ruoli) {
+			if (ruoloItem.getCodice().equals(Ruolo.ROLE_SPECIAL_PLAYER))
+				return true;
+		}
+		return false;
+	}
 
 }

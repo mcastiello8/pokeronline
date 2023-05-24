@@ -1,8 +1,6 @@
 package it.prova.pokeronline.model;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -79,8 +77,8 @@ public class Utente {
 		this.esperienzaAccumulata = esperienzaAccumulata;
 	}
 
-	public Utente(Long id, String username, String password, String nome, String cognome, Double esperienzaAccumulata,
-			Double creditoResiduo, LocalDate dataCreazione, StatoUtente stato) {
+	public Utente(String nome, String cognome, String username, String password, StatoUtente stato,
+			LocalDate dataCreazione, Double esperienzaAccumulata, Double creditoResiduo) {
 		this.nome = nome;
 		this.cognome = cognome;
 		this.username = username;
@@ -89,6 +87,37 @@ public class Utente {
 		this.creditoResiduo = creditoResiduo;
 		this.esperienzaAccumulata = esperienzaAccumulata;
 		this.stato = stato;
+	}
+
+	public Utente(Long id, String username, String password, String nome, String cognome, Double esperienzaAccumulata,
+			Double creditoResiduo, LocalDate dataCreazione, StatoUtente stato) {
+		this.id = id;
+		this.username = username;
+		this.password = password;
+		this.nome = nome;
+		this.cognome = cognome;
+		this.esperienzaAccumulata = esperienzaAccumulata;
+		this.creditoResiduo = creditoResiduo;
+		this.dataCreazione = dataCreazione;
+		this.stato = stato;
+	}
+	
+	public Utente(Long id, String nome, String cognome, String username) {
+		this.id = id;
+		this.nome = nome;
+		this.cognome = cognome;
+		this.username = username;
+	}
+	
+	
+
+	public Utente(String nome, String cognome, String username, String password, LocalDate dataCreazione) {
+		super();
+		this.nome = nome;
+		this.cognome = cognome;
+		this.username = username;
+		this.password = password;
+		this.dataCreazione = dataCreazione;
 	}
 
 	public Long getId() {
@@ -193,6 +222,14 @@ public class Utente {
 				return true;
 		}
 		return false;
+	}
+	
+	public boolean isAttivo() {
+		return this.stato != null && this.stato.equals(StatoUtente.ATTIVO);
+	}
+
+	public boolean isDisabilitato() {
+		return this.stato != null && this.stato.equals(StatoUtente.DISABILITATO);
 	}
 
 }

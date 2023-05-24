@@ -35,7 +35,7 @@ public class Tavolo {
     private Set<Utente> giocatori = new HashSet<>();
 
     @ManyToOne
-    @JoinColumn(name="utenteCreazione_id")
+    @JoinColumn(name="utente_id")
     private Utente utenteCreazione;
 
     public Tavolo() {

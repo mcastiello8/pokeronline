@@ -33,11 +33,11 @@ public class UtenteDTO {
 	@NotBlank(message = "{cognome.notblank}")
 	private String cognome;
 
-	private LocalDate dateCreated;
+	private LocalDate dataCreazione;
 
 	private Double esperienzaAccumulata;
 
-	private Double creditoAccumulato;
+	private Double creditoResiduo;
 
 	private StatoUtente stato;
 
@@ -97,12 +97,12 @@ public class UtenteDTO {
 		this.cognome = cognome;
 	}
 
-	public LocalDate getDateCreated() {
-		return dateCreated;
+	public LocalDate getDataCreazione() {
+		return dataCreazione;
 	}
 
-	public void setDateCreated(LocalDate dateCreated) {
-		this.dateCreated = dateCreated;
+	public void setDataCreazione(LocalDate dataCreazione) {
+		this.dataCreazione = dataCreazione;
 	}
 
 	public StatoUtente getStato() {
@@ -129,12 +129,12 @@ public class UtenteDTO {
 		this.esperienzaAccumulata = esperienzaAccumulata;
 	}
 
-	public Double getCreditoAccumulato() {
-		return creditoAccumulato;
+	public Double getCreditoResiduo() {
+		return creditoResiduo;
 	}
 
-	public void setCreditoAccumulato(Double creditoAccumulato) {
-		this.creditoAccumulato = creditoAccumulato;
+	public void setCreditoResiduo(Double creditoResiduo) {
+		this.creditoResiduo = creditoResiduo;
 	}
 
 	public Tavolo getTavolo() {
@@ -147,7 +147,7 @@ public class UtenteDTO {
 
 	public Utente buildUtenteModel(boolean includeIdRoles) {
 		Utente result = new Utente(this.id, this.username, this.password, this.nome, this.cognome, 
-				this.esperienzaAccumulata, this.creditoAccumulato, this.dateCreated, this.stato);
+				this.esperienzaAccumulata, this.creditoResiduo, this.dataCreazione, this.stato);
 		if (includeIdRoles && ruoliIds != null)
 			result.setRuoli(Arrays.asList(ruoliIds).stream().map(id -> new Ruolo(id)).collect(Collectors.toSet()));
 

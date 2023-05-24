@@ -160,6 +160,15 @@ public class TavoloServiceImpl implements TavoloService {
 	@Override
 	public Page<Tavolo> findByExampleNativeWithPagination(Tavolo example, Integer pageNo, Integer pageSize,
 	String sortBy) {
+	if (pageNo == null || pageNo < 0) {
+	            pageNo = 0; // Impostare a zero se non è specificato o è un valore negativo
+	        }
+	        if (pageSize == null || pageSize < 1) {
+	            pageSize = 10; // Impostare a un valore di default (es. 10) se non è specificato o è un valore non valido
+	        }
+	        if (sortBy == null || sortBy.isEmpty()) {
+	            sortBy = "id"; // Impostare un campo di ordinamento di default (es. "id") se non è specificato o è vuoto
+	        }
 	return repository.findByExampleNativeWithPagination(example.getDenominazione(), example.getEsperienzaMin(),
 	example.getCifraMinima(), example.getDataCreazione(),
 	PageRequest.of(pageNo, pageSize, Sort.by(sortBy)));

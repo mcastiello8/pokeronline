@@ -4,6 +4,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -152,6 +155,14 @@ public class TavoloServiceImpl implements TavoloService {
 	@Override
 	public List<Tavolo> findByExample(Tavolo example) {
 		return repository.findByExample(example);
+	}
+
+	@Override
+	public Page<Tavolo> findByExampleNativeWithPagination(Tavolo example, Integer pageNo, Integer pageSize,
+	String sortBy) {
+	return repository.findByExampleNativeWithPagination(example.getDenominazione(), example.getEsperienzaMin(),
+	example.getCifraMinima(), example.getDataCreazione(),
+	PageRequest.of(pageNo, pageSize, Sort.by(sortBy)));
 	}
 
 }

@@ -22,19 +22,17 @@ public interface TavoloRepository
 
 	Tavolo findByGiocatoriId(Long id);
 
-	@Query(value = "SELECT t.* FROM tavolo t "
+	@Query(value = "SELECT t.* " + "FROM tavolo t "
 			+ "WHERE ((:denominazione IS NULL OR LOWER(t.denominazione) LIKE %:denominazione%)  "
-			+ "AND (:esperienzaMin IS NULL OR t.esperienzaMin > :esperienzaMin) "
-			+ "AND (:cifraMin IS NULL OR t.cifraMin >= :cifraMin) "
-			+ "AND (:datacreazione IS NULL OR t.datacreazione >= :datacreazione) "
-			+ "AND (:username IS NULL OR LOWER(t.utentecreazione.username) LIKE %:username%))", countQuery = "SELECT t.* "
-					+ "FROM tavolo t "
-					+ "WHERE ((:denominazione IS NULL OR LOWER(t.denominazione) LIKE %:denominazione%)  "
-					+ "AND (:esperienzaMin IS NULL OR t.esperienzaMin > :esperienzaMin) "
-					+ "AND (:cifraMin IS NULL OR t.cifraMin >= :cifraMin) "
-					+ "AND (:datacreazione IS NULL OR t.datacreazione >= :datacreazione) "
-					+ "AND (:username IS NULL OR LOWER(t.utentecreazione.username) LIKE %:username%))", nativeQuery = true)
-	Page<Tavolo> findByExampleNativeWithPagination(@Param("denominazione") String denominazione,
-			@Param("esperienzaMin") Double esperienzaMin, @Param("cifraMin") Double cifraMin,
-			@Param("datacreazione") LocalDate dataCreazione, @Param("username") String username, Pageable pageable);
-}
+			+ "AND (:esperienzaminima IS NULL OR t.esperienzaminima > :esperienzaminima) "
+			+ "AND (:ciframinima IS NULL OR t.ciframinima >= :ciframinima) "
+			+ "AND (:datacreazione IS NULL OR t.datacreazione >= :datacreazione)) "
+			+ "ORDER BY t.id ASC", countQuery = "SELECT COUNT(*) " + "FROM tavolo t "
+			+ "WHERE ((:denominazione IS NULL OR LOWER(t.denominazione) LIKE %:denominazione%)  "
+			+ "AND (:esperienzaminima IS NULL OR t.esperienzaminima > :esperienzaminima) "
+			+ "AND (:ciframinima IS NULL OR t.ciframinima >= :ciframinima) "
+			+ "AND (:datacreazione IS NULL OR t.datacreazione >= :datacreazione))", nativeQuery = true)
+			Page<Tavolo> findByExampleNativeWithPagination(@Param("denominazione") String denominazione,
+			@Param("esperienzaminima") Double esperienzaMinima, @Param("ciframinima") Double cifraMinima,
+			@Param("datacreazione") LocalDate dataCreazione, Pageable pageable);
+	}

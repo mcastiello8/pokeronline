@@ -2,6 +2,8 @@ package it.prova.pokeronline.service.tavolo;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
 import it.prova.pokeronline.model.Tavolo;
 
 public interface TavoloService {
@@ -27,5 +29,8 @@ public interface TavoloService {
 	void gioca(Long id, String username);
 	
 	public List<Tavolo> findByExample(Tavolo example);
+
+	Page<Tavolo> findByExampleNativeWithPagination(Tavolo example, Integer pageNo, Integer pageSize,
+			String sortBy);
 
 }

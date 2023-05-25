@@ -35,5 +35,6 @@ public interface TavoloService {
 			String sortBy);
 
 	TavoloDTO uniscitiAlTavolo(Long idTavolo);
+	
 
 }

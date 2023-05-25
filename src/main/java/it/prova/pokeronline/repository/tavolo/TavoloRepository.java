@@ -32,7 +32,10 @@ public interface TavoloRepository
 			+ "AND (:esperienzaMin IS NULL OR t.esperienzaMin > :esperienzaMin) "
 			+ "AND (:ciframinima IS NULL OR t.ciframinima >= :ciframinima) "
 			+ "AND (:datacreazione IS NULL OR t.datacreazione >= :datacreazione))", nativeQuery = true)
-			Page<Tavolo> findByExampleNativeWithPagination(@Param("denominazione") String denominazione,
-			@Param("esperienzaMin") Double esperienzaMinima, @Param("ciframinima") Double cifraMinima,
-			@Param("datacreazione") LocalDate dataCreazione, Pageable pageable);
+	Page<Tavolo> findByExampleNativeWithPagination(@Param("denominazione") String denominazione,
+	@Param("esperienzaMin") Double esperienzaMinima, @Param("ciframinima") Double cifraMinima,
+	@Param("datacreazione") LocalDate dataCreazione, Pageable pageable);
+	
 	}
+
+

@@ -52,6 +52,11 @@ public class GiocoController {
 		return TavoloDTO.createTavoloDTOListFromModelList(tavoloService.findByEsperienzaMinimaLessThan());
 	}
 	
+	@GetMapping("/siediti/{id}")
+	public TavoloDTO siediti(@PathVariable(required = true) Long id) {
+		return tavoloService.uniscitiAlTavolo(id);
+	}
+	
 	@GetMapping("/gioca/{idTavolo}")
 	@ResponseStatus(HttpStatus.OK)
 	public void gioca(@PathVariable(value = "idTavolo", required = true) Long id) {

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 
+import it.prova.pokeronline.dto.TavoloDTO;
 import it.prova.pokeronline.model.Tavolo;
 
 public interface TavoloService {
@@ -32,5 +33,7 @@ public interface TavoloService {
 
 	Page<Tavolo> findByExampleNativeWithPagination(Tavolo example, Integer pageNo, Integer pageSize,
 			String sortBy);
+
+	TavoloDTO uniscitiAlTavolo(Long idTavolo);
 
 }

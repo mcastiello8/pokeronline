@@ -11,12 +11,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import it.prova.pokeronline.dto.TavoloDTO;
 import it.prova.pokeronline.model.Tavolo;
 import it.prova.pokeronline.model.Utente;
 import it.prova.pokeronline.repository.tavolo.TavoloRepository;
 import it.prova.pokeronline.repository.utente.UtenteRepository;
 import it.prova.pokeronline.service.utente.UtenteService;
 import it.prova.pokeronline.web.api.exception.CreditoInsufficenteException;
+import it.prova.pokeronline.web.api.exception.IdNotNullForInsertException;
 import it.prova.pokeronline.web.api.exception.TavoloNotFoundException;
 import it.prova.pokeronline.web.api.exception.UtenteInAltroTavoloException;
 
@@ -96,60 +98,92 @@ public class TavoloServiceImpl implements TavoloService {
 
 		return repository.findByEsperienzaMinLessThan(esperienzaAccumulata);
 	}
+	
+	@Override
+	@Transactional
+	public TavoloDTO uniscitiAlTavolo(Long idTavolo) {
+
+		Tavolo tavolo = repository.findById(idTavolo).orElse(null);
+
+		if (tavolo == null)
+			throw new TavoloNotFoundException("Tavolo non trovato");
+
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();
+		Utente utenteInSessione = utenteService.findByUsername(username);
+
+		if (tavolo.getGiocatori().contains(utenteInSessione))
+			throw new TavoloNotFoundException("Non puoi sederti al tavolo");
+
+		if (utenteInSessione.getCreditoResiduo() < tavolo.getCifraMinima())
+			throw new CreditoInsufficenteException("Non c'hai i soldi");
+
+		if (utenteInSessione.getEsperienzaAccumulata() < tavolo.getEsperienzaMin())
+			throw new TavoloNotFoundException("Non hai abbastanza esperienza");
+
+		tavolo.getGiocatori().add(utenteInSessione);
+
+		return TavoloDTO.buildTavoloDTOFromModel(tavolo);
+
+	}
 
 	@Override
 	@Transactional
-	public void gioca(Long id, String username) {
-		Tavolo tavoloReload = repository.findById(id).orElse(null);
+	public void gioca(Long idTavolo, String username) {
 
-		if (tavoloReload == null) {
-			throw new TavoloNotFoundException("Il tavolo in cui si cerca di entrare non esiste");
+		Tavolo tavolo = repository.findById(idTavolo).orElse(null);
+
+		if (tavolo == null)
+			throw new IdNotNullForInsertException("");
+
+		username = SecurityContextHolder.getContext().getAuthentication().getName();
+		Utente utenteInSessione = utenteService.findByUsername(username);
+
+		if (!tavolo.getGiocatori().contains(utenteInSessione))
+			throw new TavoloNotFoundException("Eh bro");
+
+		if (utenteInSessione.getCreditoResiduo() == null || utenteInSessione.getCreditoResiduo() == 0d) {
+			throw new CreditoInsufficenteException("Poveraccio");
 		}
 
-		Utente utenteLoggato = utenteService.findByUsername(username);
-
-		if (tavoloReload.getCifraMinima() > utenteLoggato.getCreditoResiduo()) {
-			throw new CreditoInsufficenteException("Credito insufficente Per giocare");
-		}
-
-		List<Tavolo> listaTavoli = (List<Tavolo>) repository.findAll();
-
-		for (Tavolo elementoTavolo : listaTavoli) {
-			if (elementoTavolo.getId() != id) {
-				for (Utente elementoUtente : elementoTavolo.getGiocatori())
-					if (elementoUtente.getId().equals(utenteLoggato.getId())) {
-						throw new UtenteInAltroTavoloException("Stai giocando ad un altro tavolo non puoi unirti");
-					}
-			}
-		}
-
-		tavoloReload.getGiocatori().add(utenteLoggato);
-
-		boolean maggiore = false;
 		double segno = Math.random();
-		Double credito = 0.0;
+		if (segno < 0.5)
+			segno = segno * -1;
+		int somma = (int) (Math.random() * 500);
+		int totale = (int) (segno * somma);
 
-		if (segno >= 0.5) {
-			maggiore = true;
-		} else {
-			maggiore = false;
+		Integer esperienzaGuadagnata = 0;
+
+		if (totale > 0) {
+			esperienzaGuadagnata += 5;
+			if (totale > 200)
+				esperienzaGuadagnata += 6;
+			if (totale > 400)
+				esperienzaGuadagnata += 7;
+			if (totale > 499)
+				esperienzaGuadagnata += 8;
 		}
 
-		if (maggiore) {
-			credito = (utenteLoggato.getCreditoResiduo() + Math.random() * 10);
-		} else {
-			credito = (utenteLoggato.getCreditoResiduo() - Math.random() * 10);
+		if (totale <= 0) {
+			esperienzaGuadagnata += 4;
+			if (totale < -200)
+				esperienzaGuadagnata += 3;
+			if (totale < -400)
+				esperienzaGuadagnata += 2;
+			if (totale < -499)
+				esperienzaGuadagnata += 1;
 		}
 
-		if (utenteLoggato.getCreditoResiduo() <= 0) {
-			utenteLoggato.setCreditoResiduo(0.0);
-			throw new CreditoInsufficenteException("Credito insufficente");
-		}
-		
-		utenteLoggato.setCreditoResiduo(credito);
-		utenteRepository.save(utenteLoggato);
+		utenteInSessione.setEsperienzaAccumulata(esperienzaGuadagnata + utenteInSessione.getEsperienzaAccumulata());
 
-		repository.save(tavoloReload);
+		Double creditoDaInserire = utenteInSessione.getCreditoResiduo() + totale;
+
+		if (creditoDaInserire < 0) {
+			creditoDaInserire = 0D;
+		}
+
+		utenteInSessione.setCreditoResiduo(creditoDaInserire);
+
+
 	}
 
 	@Override

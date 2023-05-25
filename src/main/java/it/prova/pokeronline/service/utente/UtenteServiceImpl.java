@@ -115,14 +115,13 @@ public class UtenteServiceImpl implements UtenteService {
 	@Transactional
 	public void abbandonaPartita(Utente utente) {
 		Tavolo result = tavoloRepository.findByGiocatoriId(utente.getId());
-		
 		if(result==null) {
 			throw new TavoloNotFoundException("Impossibile abbandonare la partita, non sei in nessun tavolo!");
 		}
-		utente.setEsperienzaAccumulata(utente.getEsperienzaAccumulata() + 1);
+		utente.setEsperienzaAccumulata(utente.getEsperienzaAccumulata() + 1.0);
 		result.getGiocatori().remove(utente);
 	}
-
+	
 
 
 }

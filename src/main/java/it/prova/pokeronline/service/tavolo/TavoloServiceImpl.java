@@ -136,9 +136,9 @@ public class TavoloServiceImpl implements TavoloService {
 		}
 
 		if (maggiore) {
-			credito = (utenteLoggato.getCreditoResiduo() + Math.random() * 1000);
+			credito = (utenteLoggato.getCreditoResiduo() + Math.random() * 10);
 		} else {
-			credito = (utenteLoggato.getCreditoResiduo() - Math.random() * 1000);
+			credito = (utenteLoggato.getCreditoResiduo() - Math.random() * 10);
 		}
 
 		if (utenteLoggato.getCreditoResiduo() <= 0) {

@@ -108,8 +108,6 @@ public class Utente {
 		this.cognome = cognome;
 		this.username = username;
 	}
-	
-	
 
 	public Utente(String nome, String cognome, String username, String password, LocalDate dataCreazione) {
 		super();
